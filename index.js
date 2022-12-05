@@ -1,6 +1,5 @@
 //set variables
 var cities = [];
-//cities = searchHistory
 
 var apiKey = '4edd039b4a729cc92220e628ac141ac7'
 var apiUrl = 'https://api.openweathermap.org';
@@ -8,7 +7,6 @@ var apiUrl = 'https://api.openweathermap.org';
 
 var searchInput = document.querySelector('#search-input');
 var searchForm = document.querySelector('#search-input');
-
 var todayCont = document.querySelector('#today');
 var forecastCont = document.querySelector('#forecast');
 var searchesCont = document.querySelector('#history');
@@ -19,12 +17,11 @@ dayjs.extend(window.dayjs_lpugin_timezone);
 function renderCitiesSearched() {
   citiesContainer.innerHTML = '';
 
-  // Start at end of history array and count down to show the most recent at the top.
   for (var i = cities.length - 1; i >= 0; i--) {
     var btn = document.createElement('button');
-    btn.setAttribute('type', 'button');
-    btn.setAttribute('aria-controls', 'today forecast');
-    btn.classList.add('history-btn', 'btn-history');
+     btn.setAttribute('type', 'button');
+     btn.setAttribute('aria-controls', 'today forecast');
+     btn.classList.add('history-btn', 'btn-history');
 
     // `data-search` allows access to city name when click handler is invoked
     btn.setAttribute('data-search', searchHistory[i]);
@@ -54,11 +51,10 @@ function initSearchHistory() {
   renderSearchHistory();
 }
 
-// Function to display the current weather data fetched from OpenWeather api.
-function renderCurrentWeather(city, weather, timezone) {
+  //shows weather from API
   var date = dayjs().tz(timezone).format('M/D/YYYY');
 
-  // Store response data from our fetch request in variables
+  // fetch requests go here
   var tempF = weather.temp;
   var windMph = weather.wind_speed;
   var humidity = weather.humidity;
@@ -70,7 +66,7 @@ function renderCurrentWeather(city, weather, timezone) {
   var card = document.createElement('div');
   var cardBody = document.createElement('div');
   var weatherIcon = document.createElement('img');
-  var tempEl = document.createElement('p');
+  var temperatureEl = document.createElement('p');
   var windEl = document.createElement('p');
   var humidityEl = document.createElement('p');
   var uvEl = document.createElement('p');
@@ -81,7 +77,7 @@ function renderCurrentWeather(city, weather, timezone) {
   card.append(cardBody);
 
   heading.setAttribute('class', 'h3 card-title');
-  tempEl.setAttribute('class', 'card-text');
+  temperatureEl.setAttribute('class', 'card-text');
   windEl.setAttribute('class', 'card-text');
   humidityEl.setAttribute('class', 'card-text');
 
@@ -114,10 +110,8 @@ function renderCurrentWeather(city, weather, timezone) {
   todayContainer.append(card);
 }
 
-// Function to display a forecast card given an object from open weather api
-// daily forecast.
 function renderForecastCard(forecast, timezone) {
-  // variables for data from api
+
   var unixTs = forecast.dt;
   var iconUrl = `https://openweathermap.org/img/w/${forecast.weather[0].icon}.png`;
   var iconDescription = forecast.weather[0].description;
@@ -125,7 +119,7 @@ function renderForecastCard(forecast, timezone) {
   var { humidity } = forecast;
   var windMph = forecast.wind_speed;
 
-  // Create elements for a card
+  // card elements
   var col = document.createElement('div');
   var card = document.createElement('div');
   var cardBody = document.createElement('div');
@@ -171,14 +165,9 @@ function renderForecast(dailyForecast, timezone) {
   headingCol.setAttribute('class', 'col-12');
   heading.textContent = '5-Day Forecast:';
   headingCol.append(heading);
-
   forecastContainer.innerHTML = '';
   forecastContainer.append(headingCol);
   for (var i = 0; i < dailyForecast.length; i++) {
-    // The api returns forecast data which may include 12pm on the same day and
-    // always includes the next 7 days. The api documentation does not provide
-    // information on the behavior for including the same day. Results may have
-    // 7 or 8 items.
     if (dailyForecast[i].dt >= startDt && dailyForecast[i].dt < endDt) {
       renderForecastCard(dailyForecast[i], timezone);
     }
@@ -190,13 +179,12 @@ function renderItems(city, data) {
   renderForecast(data.daily, data.timezone);
 }
 
-// Fetches weather data for given location from the Weather Geolocation
-// endpoint; then, calls functions to display current and forecast weather data.
 function fetchWeather(location) {
+  var city = location.name;
   var { lat } = location;
   var { lon } = location;
-  var city = location.name;
   var apiUrl = `${apiUrl}/data/2.5/onecall?lat=${lat}&lon=${lon}&units=imperial&exclude=minutely,hourly&appid=${weatherApiKey}`;
+  
 
   fetch(apiUrl)
     .then(function (res) {
@@ -231,7 +219,6 @@ function fetchCoords(search) {
 }
 
 function handleSearchFormSubmit(e) {
-  // Don't continue if there is nothing in the search form
   if (!searchInput.value) {
     return;
   }
@@ -242,8 +229,8 @@ function handleSearchFormSubmit(e) {
   searchInput.value = '';
 }
 
+
 function handleSearchHistoryClick(e) {
-  // Don't do search if current elements is not a search history button
   if (!e.target.matches('.btn-history')) {
     return;
   }
